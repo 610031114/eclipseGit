@@ -1,6 +1,6 @@
 package com.linGuoLiang.bean;
 
-public class Good {		//产品实体类
+public class Good {		
 
 	private int gid;
 	private String gname;
