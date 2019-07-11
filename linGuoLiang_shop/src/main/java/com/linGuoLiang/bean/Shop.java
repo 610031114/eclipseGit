@@ -2,7 +2,7 @@ package com.linGuoLiang.bean;
 
 import java.sql.Date;
 
-public class Shop {
+public class Shop {		//商店实体类
 
 	private int sid;
 	private String sname;
