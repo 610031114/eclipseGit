@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linGuoLiang.mapper.ShopMapper">
+
+	<select id="getSids" resultType="int" parameterType="map">
+		SELECT s.sid,s.sname,s.times,GROUP_CONCAT(g.gname) names FROM `0709_shop` s LEFT JOIN 0709_middle m on s.sid = m.sid 
+		LEFT JOIN 0709_good g on m.gid = g.gid
+		<where>
+			<if test="likename != null and likename != ''">
+				and s.sname like concat('%',#{likename},'%')
+			</if>
+			<if test="gids != null and gids != ''">
+				and g.gid in
+				<foreach collection="gids" item="gid" open="(" separator="," close=")">
+					#{gid}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY s.sid
+	</select>
+
+	<select id="getList" resultType="map" parameterType="int">
+		SELECT s.sid,s.sname,s.times,GROUP_CONCAT(g.gname) names FROM `0709_shop` s LEFT JOIN 0709_middle m on s.sid = m.sid 
+		LEFT JOIN 0709_good g on m.gid = g.gid
+		<where>
+			s.sid in 
+			<foreach collection="list" item="sid" open="(" separator="," close=")">
+				#{sid}
+			</foreach>
+		</where>
+		GROUP BY s.sid
+	</select>
+
+	<select id="getGoodList" resultType="good">
+		select * from 0709_good
+	</select>
+
+	<insert id="addShop" parameterType="shop" useGeneratedKeys="true" keyProperty="sid">
+		insert into 0709_shop(sname,times) values(#{sname},#{times})
+	</insert>
+
+	<insert id="addMiddle" parameterType="map">
+		insert into 0709_middle(sid,gid) values
+		<foreach collection="gids" item="gid" separator=",">
+			(#{sid},#{gid})
+		</foreach>
+	</insert>
+	
+	<delete id="deleteAll" parameterType="int">
+		delete from 0709_shop where sid in
+		<foreach collection="array" item="sid" open="(" separator="," close=")">
+			#{sid}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteMiddle" parameterType="int">
+		delete from 0709_middle where sid in
+		<foreach collection="array" item="sid" open="(" separator="," close=")">
+			#{sid}
+		</foreach>
+	</delete>
+
+	<select id="getShopById" resultType="shop" parameterType="int">
+		select * from 0709_shop where sid = #{sid}
+	</select>
+
+	<select id="getGidBySid" resultType="int" parameterType="int">
+		SELECT gid FROM `0709_middle` where sid = #{sid}
+	</select>
+</mapper>
